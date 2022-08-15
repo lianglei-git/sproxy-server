@@ -1,0 +1,17 @@
+{
+  "name": "pro-proxy-server",
+  "version": "1.0.0",
+  "description": "production proxy server (http-server)",
+  "main": "index.js",
+  "scripts": {
+    "server": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-proxy": "^1.18.1",
+    "http-server": "^14.1.1",
+    "mime": "^3.0.0"
+  }
+}
