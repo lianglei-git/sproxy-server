@@ -9,6 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": {
+    "proxy-server": "./bin/index.js"
+  },
   "dependencies": {
     "http-proxy": "^1.18.1",
     "http-server": "^14.1.1",
