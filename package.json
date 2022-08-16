@@ -2,7 +2,7 @@
   "name": "pro-proxy-server",
   "version": "1.0.0",
   "description": "production proxy server (http-server)",
-  "main": "index.js",
+  "main": "source/index.js",
   "scripts": {
     "server": "node index.js"
   },

@@ -214,8 +214,8 @@ function trim(str) {
  */
 function isStandardBrowserEnv() {
   if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
-                                           navigator.product === 'NativeScript' ||
-                                           navigator.product === 'NS')) {
+    navigator.product === 'NativeScript' ||
+    navigator.product === 'NS')) {
     return false;
   }
   return (
@@ -332,6 +332,19 @@ function stripBOM(content) {
   return content;
 }
 
+function openDefaultBrower() {
+  var exec = require('child_process').exec;
+  switch (process.platform) {
+    case "darwin":
+      exec('open ' + url);
+      break;
+    case "win32":
+      exec('start ' + url);
+    default:
+      exec('xdg-open ', [url]);
+  }
+}
+
 module.exports = {
   isArray: isArray,
   isArrayBuffer: isArrayBuffer,
@@ -354,5 +367,6 @@ module.exports = {
   merge: merge,
   extend: extend,
   trim: trim,
-  stripBOM: stripBOM
+  stripBOM: stripBOM,
+  openDefaultBrower: openDefaultBrower
 };

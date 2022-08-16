@@ -10,12 +10,15 @@ var proxy = httpProxy.createProxyServer();
 var spawn = child_process.spawn;
 var merge = require('./merge');
 const defaultConfig = require('./defaut_configs');
+const { openDefaultBrower } = require('./utils');
 const basicConnect = path.resolve(__dirname, '../dist');
 
 process.on('uncaughtException', function (err) {
   console.error(err);
 });
 
+/** @type defaultConfig */
+const config = merge(defaultConfig, {});
 const decode = [
   {
     url: '/static/viewct/',
@@ -71,6 +74,14 @@ http
       console.error(e);
     }
   })
-  .listen(8081, '127.0.0.1', () => {
-    console.log('端口：：8081');
+  .listen(config.port, '127.0.0.1', () => {
+    const IP = 'http://127.0.0.1:' + config.port;
+    console.log('URL -> ', IP);
+    if (config.open) {
+      openDefaultBrower(IP);
+    }
   });
+
+module.exports = (targetConfig = {}) => {
+
+}
