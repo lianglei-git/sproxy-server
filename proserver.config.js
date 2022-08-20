@@ -1,3 +1,3 @@
 module.exports = {
-    name: '爱过你'
+    name: '三年二班 麻雀'
 }
