@@ -1,3 +1,3 @@
 #! usr/local/bin node
 
-require('../bin.js');
+require('../source/bin.js');

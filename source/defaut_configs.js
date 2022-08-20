@@ -1,7 +1,7 @@
-const path = require('path');
+import path from 'path';
 export default {
   hot: true,
-  contentBase: path.join(__dirname, 'dist'),
+  contentBase: '../dist',
   port: 24678,
   open: true, // 是否自动打开默认浏览器
   // 隔离模式头
@@ -22,6 +22,9 @@ export default {
         if (req.url.substr(0, 15) == '/static/viewct/') {
           return req.url.substr(14);
         }
+      },
+      intercept(){
+
       }
     }
   }

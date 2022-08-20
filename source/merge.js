@@ -1,6 +1,7 @@
-const utils = require('./utils');
+import * as utils from './utils.js';
 
-module.exports = function mergeConfig(config1, config2) {
+
+export default function mergeConfig(config1, config2) {
   // eslint-disable-next-line no-param-reassign
   config2 = config2 || {};
   var config = {};

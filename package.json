@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "production proxy server (http-server)",
   "main": "source/index.js",
+  "type": "module",
   "scripts": {
-    "server": "node index.js"
+    "server": "node ./source/bin.js"
   },
   "keywords": [],
   "author": "",

@@ -1,87 +1,100 @@
-// 待完善
-var http = require('http');
-var httpProxy = require('http-proxy');
-var httpServer = require('http-server');
-var child_process = require('child_process');
-var mime = require('mime');
-var path = require('path');
-const { readFileSync } = require('fs');
+// TODO
+import child_process from 'child_process';
+import { readFileSync } from 'fs';
+import http from 'http';
+import httpProxy from 'http-proxy';
+import mime from 'mime';
+import path from 'path';
+import { isPromise } from 'util/types';
+import { openDefaultBrower, isUndefined, isString, isFunction } from './utils.js';
 var proxy = httpProxy.createProxyServer();
 var spawn = child_process.spawn;
-var merge = require('./merge');
-const defaultConfig = require('./defaut_configs');
-const { openDefaultBrower } = require('./utils');
-const basicConnect = path.resolve(__dirname, '../dist');
 
 process.on('uncaughtException', function (err) {
   console.error(err);
 });
 
-/** @type defaultConfig */
-const config = merge(defaultConfig, {});
-const decode = [
-  {
-    url: '/static/viewct/',
-    format(req, res, body) {
-      let revalURL = req.url.replace('/static/viewct/', '');
-      if (revalURL.indexOf('?') > -1) {
-        revalURL = revalURL.slice(0, revalURL.indexOf('?'));
-      }
-      const content = readFileSync(
-        path.resolve(basicConnect, revalURL),
-        'utf-8'
-      );
-      const type = mime.getType(revalURL);
-      res.setHeader('Content-Type', type);
-      return content || body;
+function Run(config) {
+  const decode = [];
+
+  if (!isUndefined(config.decodeFunction)) {
+    decode.concat(config.decodeFunction(config));
+  }
+  
+  for(let k in config.proxy) {
+    if(isFunction(config.proxy[k].intercept)) {
+      decode.push({url: k, format: config.proxy[k].intercept})
     }
   }
-];
 
-function formatRes(req, res, body) {
-  const filter = decode.find((i) => req.url.indexOf(i.url) > -1);
-  const result = filter && filter.format(req, res, body);
-  return result;
-}
+  if (!isUndefined(config.publicPath) && isString(config.publicPath)) {
+    /** publicPath who? */
+    // decode.push({
+    //   url: config.publicPath,
+    //   format(req, res, body) {
+    //     let revalURL = req.url.replace(config.publicPath, '');
+    //     if (revalURL.indexOf('?') > -1) {
+    //       revalURL = revalURL.slice(0, revalURL.indexOf('?'));
+    //     }
+    //     const content = readFileSync(
+    //       path.resolve(config.basicConnect, revalURL),
+    //       'utf-8'
+    //     );
+    //     const type = mime.getType(revalURL);
+    //     res.setHeader('Content-Type', type);
+    //     return content || body;
+    //   }
+    // })
+  }
 
-proxy.on('proxyRes', function (proxyRes, req, res) {
-  var body = [];
-  proxyRes.on('data', function (chunk) {
-    body.push(chunk);
+  function formatRes(req, res, body) {
+    const filter = decode.find((i) => req.url.indexOf(i.url) > -1);
+    const result = filter && filter.format(req, res, body);
+    return result;
+  }
+
+  proxy.on('proxyRes', function (proxyRes, req, res) {
+    var body = [];
+    proxyRes.on('data', function (chunk) {
+      body.push(chunk);
+    });
+    proxyRes.on('end', function () {
+      body = Buffer.concat(body);
+      const formatBody = formatRes(req, res, body);
+      if(isPromise(formatBody))return formatBody.then(r => res.end(r))
+      return res.end(formatBody);
+    });
   });
-  proxyRes.on('end', function () {
-    body = Buffer.concat(body);
-    const formatBody = formatRes(req, res, body);
-    if (formatBody) return res.end(formatBody);
-  });
-});
 
-http
-  .createServer(function (req, res) {
-    try {
-      // 如果以test开头的请求则做额外处理
-      if (req.url.substr(0, 6) == '/test/') {
-        // ......
-        return;
+  http
+    .createServer(function (req, res) {
+      let proxyKeys = Object(config.proxy).keys();
+      let paoxyTarget = proxyKeys.find(i => req.url.indexOf(i.url) > -1)
+      if (target) {
+        proxy.web(req, res, {
+          target: paoxyTarget.target,
+          selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
+          changeOrigin: true
+        });
       }
-      proxy.web(req, res, {
-        target: 'http://10.2.112.100:8360',
-        selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
-        changeOrigin: true
-      });
-      // //其他请求直接转发
-    } catch (e) {
-      console.error(e);
-    }
-  })
-  .listen(config.port, '127.0.0.1', () => {
-    const IP = 'http://127.0.0.1:' + config.port;
-    console.log('URL -> ', IP);
-    if (config.open) {
-      openDefaultBrower(IP);
-    }
-  });
-
-module.exports = (targetConfig = {}) => {
+    })
+    .listen(config.port, config.host, () => {
+      const IP = 'http://' + config.host + ':' + config.port;
+      console.log('URL -> ', IP);
+      if (config.open) {
+        openDefaultBrower(IP);
+      }
+    });
 
 }
+
+module.exports = Run
+
+
+/** using */
+// 1. Using the CLI:  proxy-server || proxy-server abc.config.js
+// 2. Using the Code: 
+//                1|  import Server from 'pro-proxy-server'
+//                2|  Server(config);
+//                3|  wait... is not the end
+//                4|  in case want to see the detailed configuration， i don't konw 🤕️

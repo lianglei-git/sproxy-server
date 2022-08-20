@@ -1,7 +1,24 @@
-const process = require('process');
+import process from 'process';
+import fs from 'node:fs';
+import path from 'path';
+import minimist from 'minimist'
+import defineConfig from './define.config.js';
+import { isFunction, isUndefined, isPlainObject } from './utils.js';
+import { fileURLToPath } from 'url'
+import require from './_require.js'
+import Entry from './index.js';
+const cwd = process.cwd();
+const argv = minimist(process.argv.slice(2));
+const __filenameNew = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filenameNew)
 
-var argv = require('minimist')(process.argv.slice(2));
 process.title = 'xy-pro-server';
+let full_config;
+const _resolve = path.resolve;
+const CONST_FILE_NAME = 'proserver.config.js';
+
+
+
 
 if (argv.h || argv.help) {
   console.log([
@@ -25,7 +42,7 @@ if (argv.h || argv.help) {
     '               To disable caching, use -c-1.',
     '  -t           Connections timeout in seconds [120], e.g. -t60 for 1 minute.',
     '               To disable timeout, use -t0',
-    '  -U --utc     Use UTC time format in log messages.',
+    '  -U --utc     Use UTC time from at in log messages.',
     '  --log-ip     Enable logging of the client\'s IP address',
     '',
     '  -P --proxy       Fallback proxy if the request cannot be resolved. e.g.: http://someurl.com',
@@ -49,3 +66,25 @@ if (argv.h || argv.help) {
   process.exit();
 }
 
+if (argv._[0] && argv._[0].indexOf('.config') > -1) {
+  let jobConfig = require(_resolve(cwd, argv._[0]));
+  /** 
+   * Only plain object of the target file are processed
+   */
+  if (isPlainObject(jobConfig) && !isFunction(jobConfig)) {
+
+    full_config = defineConfig(Object.assign(jobConfig, argv));
+  } else {
+    console.error('Only support "Object"');
+  }
+} else {
+  try {
+    const jobRoot_default_Config = require(_resolve(cwd, CONST_FILE_NAME))
+    full_config = defineConfig(Object.assign(jobRoot_default_Config, argv))
+  } catch {
+    full_config = defineConfig(argv);
+  }
+}
+
+
+full_config && Entry(full_config);
