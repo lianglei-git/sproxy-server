@@ -1,5 +1,5 @@
 {
-  "name": "pro-proxy-server",
+  "name": "sproxy-server",
   "version": "1.0.0",
   "description": "production proxy server (http-server),  after packaged agent",
   "main": "source/index.js",
@@ -13,6 +13,10 @@
   "config": {
     "title": "xy-proxy"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lianglei-git/pro-proxy-server.git"
+  },
   "preferGlobal": true,
   "scripts": {
     "server": "node ./source/bin.js ./__test__/proserver.config.js",
@@ -23,7 +27,7 @@
     "after packaged agent",
     "proxy-server"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "proxy-server": "./bin/index.mjs"
   },

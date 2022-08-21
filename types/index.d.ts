@@ -6,5 +6,4 @@ type Config = defaultConfig
 declare const proServer:(config: Config) => void;
 export default proServer;
 
-
-declare export const defineConfig: (config: Config) => Config
+export declare const defineConfig: (config: Config) => Config
