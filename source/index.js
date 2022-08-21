@@ -6,6 +6,7 @@ import httpProxy from 'http-proxy';
 import mime from 'mime';
 import path from 'path';
 import { isPromise } from 'util/types';
+import defineConfig from './define.config.js'
 import { openDefaultBrower, isUndefined, isString, isFunction } from './utils.js';
 var proxy = httpProxy.createProxyServer();
 var spawn = child_process.spawn;
@@ -20,10 +21,10 @@ function Run(config) {
   if (!isUndefined(config.decodeFunction)) {
     decode.concat(config.decodeFunction(config));
   }
-  
-  for(let k in config.proxy) {
-    if(isFunction(config.proxy[k].intercept)) {
-      decode.push({url: k, format: config.proxy[k].intercept})
+
+  for (let k in config.proxy) {
+    if (isFunction(config.proxy[k].intercept)) {
+      decode.push({ url: k, format: config.proxy[k].intercept })
     }
   }
 
@@ -61,18 +62,18 @@ function Run(config) {
     proxyRes.on('end', function () {
       body = Buffer.concat(body);
       const formatBody = formatRes(req, res, body);
-      if(isPromise(formatBody))return formatBody.then(r => res.end(r))
+      if (isPromise(formatBody)) return formatBody.then(r => res.end(r))
       return res.end(formatBody);
     });
   });
 
   http
     .createServer(function (req, res) {
-      let proxyKeys = Object(config.proxy).keys();
-      let paoxyTarget = proxyKeys.find(i => req.url.indexOf(i.url) > -1)
-      if (target) {
+      let proxyKeys = Object.keys(config.proxy);
+      let currKey = proxyKeys.find(i => req.url.indexOf(i) > -1)
+      if (currKey && config.proxy[currKey]) {
         proxy.web(req, res, {
-          target: paoxyTarget.target,
+          target: config.proxy[currKey].target,
           selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
           changeOrigin: true
         });
@@ -82,15 +83,17 @@ function Run(config) {
       const IP = 'http://' + config.host + ':' + config.port;
       console.log('URL -> ', IP);
       if (config.open) {
-        openDefaultBrower(IP);
+        openDefaultBrower(IP)
       }
     });
-
 }
 
-module.exports = Run
+Run.defineConfig = defineConfig;
+export default Run;
 
-
+export {
+  defineConfig
+}
 /** using */
 // 1. Using the CLI:  proxy-server || proxy-server abc.config.js
 // 2. Using the Code: 

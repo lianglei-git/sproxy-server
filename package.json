@@ -1,21 +1,45 @@
 {
   "name": "pro-proxy-server",
   "version": "1.0.0",
-  "description": "production proxy server (http-server)",
+  "description": "production proxy server (http-server),  after packaged agent",
   "main": "source/index.js",
   "type": "module",
-  "scripts": {
-    "server": "node ./source/bin.js"
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "sparrow",
+    "email": "lianglei_cool@163.com",
+    "url": "https://github.com/lianglei-git/pro-proxy-server"
   },
-  "keywords": [],
-  "author": "",
+  "config": {
+    "title": "xy-proxy"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "server": "node ./source/bin.js ./__test__/proserver.config.js",
+    "test": "vitest"
+  },
+  "keywords": [
+    "proxy",
+    "after packaged agent",
+    "proxy-server"
+  ],
   "license": "ISC",
   "bin": {
-    "proxy-server": "./bin/index.js"
+    "proxy-server": "./bin/index.mjs"
+  },
+  "bugs": {
+    "url": "https://github.com/lianglei-git/pro-proxy-server/issues",
+    "email": "lianglei_cool@163.com"
+  },
+  "optionalDependencies": {
+    "vitest": "^0.22.1"
+  },
+  "engines": {
+    "node": ">=8.0.0",
+    "npm": "~6.1.0"
   },
   "dependencies": {
     "http-proxy": "^1.18.1",
-    "http-server": "^14.1.1",
     "mime": "^3.0.0"
   }
 }

@@ -1,5 +1,4 @@
-'use strict';
-
+import { exec } from 'child_process';
 function bind(fn, thisArg) {
   return function wrap() {
     var args = new Array(arguments.length);
@@ -332,8 +331,7 @@ function stripBOM(content) {
   return content;
 }
 
-function openDefaultBrower() {
-  var exec = require('child_process').exec;
+function openDefaultBrower(url) {
   switch (process.platform) {
     case "darwin":
       exec('open ' + url);

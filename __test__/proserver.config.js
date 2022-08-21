@@ -1,3 +1,5 @@
+// require('./aa.js')
+
 module.exports = {
     ksl:1123,
     contentBase: '../dist',
@@ -29,7 +31,15 @@ module.exports = {
     proxy: {
         '/': {
           // target: 'http://10.2.118.227:8360/', // 'http://10.2.112.100:8360/',
-          target: 'http://10.2.112.100:8360/',
+          target: 'http://218.28.104.157:443',
+          intercept(req,res){
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            return `
+              <div style="font-size:22px">
+                  pro-proxy-server is <span style="color:#b86c0f">heavy</span>!
+              </div>
+            `
+          },
           bypass: function name(req, res) {
             // 静态资源读取本地
             if (req.url.substr(0, 15) == '/static/viewct/') {

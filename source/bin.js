@@ -86,5 +86,5 @@ if (argv._[0] && argv._[0].indexOf('.config') > -1) {
   }
 }
 
-
+// console.log(full_config);
 full_config && Entry(full_config);
