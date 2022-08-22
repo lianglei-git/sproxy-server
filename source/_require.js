@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'fs';
-import { dirname, extname } from 'path';
+import { dirname, extname, resolve } from 'path';
 import vm from 'vm';
 
 class Module {
@@ -17,7 +17,8 @@ class Module {
         },
         'ts'() { }
     }
-    static _resolvePathName(filenmae) {
+    static _resolvePathName(_filenmae) {
+        var filenmae = resolve(_filenmae);
         let id = null;
         if (existsSync(filenmae)) {
             id = filenmae
