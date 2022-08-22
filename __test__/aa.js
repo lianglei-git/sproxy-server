@@ -1,3 +1,3 @@
-console.log(9998800)
-// 
+import require from '../source/_require.js'
 
+console.log(require('./lock_2require'))

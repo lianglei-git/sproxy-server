@@ -1,14 +1,17 @@
-import {test, it, expect} from 'vitest';
-import require from '../source/_require';
+import {describe, test, it, expect} from 'vitest';
+// import require from '../source/_require';
 import lockone from './lock_1require'
-
-test("for my require test", () => {
+import {resolve} from 'path'
+describe("for my require test", () => {
     it("only one js", () => { // ✅
-        expect(require('./lock_1require')).toEqual(lockone);
+
+        expect(import('./lock_1require')).toEqual(lockone)
     })
 
-    it("To other references", () => {
+    test("To other references", () => {
         // TODO
+        // require(resolve(__dirname,'./lock_2require'))
+        // expect().toEqual(lockone)
     })
 })
 
