@@ -40,11 +40,13 @@ module.exports = {
               </div>
             `
       },
+      // 👌
       bypass: function name(req, res) {
         // 静态资源读取本地
         if (req.url.substr(0, 15) == '/static/viewct/') {
           return req.url.substr(14);
         }
+        // return '/bin/index.mjs'
       }
     }
   }

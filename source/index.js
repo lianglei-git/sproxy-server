@@ -1,7 +1,7 @@
 // TODO
 import child_process from 'child_process';
-import { readFileSync } from 'fs';
-import createApplication from './kiss.js';
+import fs, { accessSync, existsSync, readFileSync } from 'fs';
+import createApplication, { useCores } from './kiss.js';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import mime from 'mime';
@@ -9,18 +9,16 @@ import path from 'path';
 import { isPromise } from 'util/types';
 import defineConfig from './define.config.js'
 import { openDefaultBrower, isUndefined, isString, isFunction } from './utils.js';
+const app = createApplication();
 var proxy = httpProxy.createProxyServer();
 var spawn = child_process.spawn;
 
-
+app.use(useCores());
 process.on('uncaughtException', function (err) {
   console.error(err);
 });
 
 
-const localFile = (path) => {
-
-}
 function Run(config) {
   const decode = [];
 
@@ -35,28 +33,7 @@ function Run(config) {
   }
 
   if (!isUndefined(config.publicPath) && isString(config.publicPath)) {
-    /** publicPath who? */
-    // localTransfrom: {
-    //   "/a/b/c" () {
-
-    //   }
-    // }
-    // decode.push({
-    //   url: config.publicPath,
-    //   format(req, res, body) {
-    //     let revalURL = req.url.replace(config.publicPath, '');
-    //     if (revalURL.indexOf('?') > -1) {
-    //       revalURL = revalURL.slice(0, revalURL.indexOf('?'));
-    //     }
-    //     const content = readFileSync(
-    //       path.resolve(config.basicConnect, revalURL),
-    //       'utf-8'
-    //     );
-    //     const type = mime.getType(revalURL);
-    //     res.setHeader('Content-Type', type);
-    //     return content || body;
-    //   }
-    // })
+   // ...
   }
 
   function formatRes(req, res, body) {
@@ -78,44 +55,59 @@ function Run(config) {
     });
   });
 
-  http
-    .createServer(function (req, res) {
-      let proxyKeys = Object.keys(config.proxy);
-      let currKey = proxyKeys.find(i => req.url.indexOf(i) > -1)
-      if (currKey && config.proxy[currKey]) {
-        const bypassUrl = config.proxy[currKey].bypass && config.proxy[currKey].bypass(req, res);
-        /** in case match bypassUrl, returns local file */
-        if(typeof bypassUrl === 'string') {
-          req.url = bypassUrl;
-        }
-        proxy.web(req, res, {
-          target: config.proxy[currKey].target,
-          selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
-          changeOrigin: true
-        });
-      }
-    })
-    .listen(config.port, config.host, () => {
-      const IP = 'http://' + config.host + ':' + config.port;
-      console.log('URL -> ', IP);
-      if (config.open) {
-        openDefaultBrower(IP)
-      }
+  const getProxyTarget = (req) => {
+    let proxyKeys = Object.keys(config.proxy);
+    let currKey = proxyKeys.find(i => req.url.indexOf(i) > -1);
+    const target = currKey && config.proxy[currKey];
+    return target;
+  }
+
+  /** match proxy targe */
+  app.use((req, res, next) => {
+    const proxyTarget = getProxyTarget(req)
+    if (proxyTarget) {
+      res.proxyTarget = proxyTarget;
+      next();
+    };
+  })
+  /** bypass */
+  app.use((req, res, next) => {
+    /** bypass, If a local file is matched, the local file is used; in case match bypassUrl, returns local file */
+    const proxyTarget = res.proxyTarget;
+    const bypassUrl = proxyTarget.bypass && proxyTarget.bypass(req, res) || '';
+    if (bypassUrl.indexOf('?') > -1) {
+      bypassUrl = bypassUrl.slice(0, bypassUrl.indexOf('?'));
+    }
+    // const i = accessSync(path.join(config.basicConnect, bypassUrl), fs.constants.F_OK);
+    const realPath = path.join(config.basicConnect, bypassUrl)
+    const p = path.extname(bypassUrl) && existsSync(realPath);
+    if (p) {
+      const content = readFileSync(realPath, 'utf-8');
+      res.end(content);
+    }else {
+      next();
+    }
+  })
+  /** proxy */
+  app.use((req, res, next) => {
+    const proxyTarget = res.proxyTarget;
+    proxy.web(req, res, {
+      target: proxyTarget.target,
+      selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
+      changeOrigin: true
     });
+  });
+
+  app.listen(config.port, config.host, () => {
+    const IP = 'http://' + config.host + ':' + config.port;
+    console.log('URL -> ', IP);
+    if (config.open) {
+      openDefaultBrower(IP)
+    }
+  });
 }
 
-const app = () => {
-  const tasks = Array();
 
-  function handle(req,res,next) {
-    var done = next
-  };
-
-  return handle
-}
-
-const _app = app()
-_app
 Run.defineConfig = defineConfig;
 export default Run;
 
