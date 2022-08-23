@@ -1,6 +1,7 @@
 // TODO
 import child_process from 'child_process';
 import { readFileSync } from 'fs';
+import createApplication from './kiss.js';
 import http from 'http';
 import httpProxy from 'http-proxy';
 import mime from 'mime';
@@ -11,10 +12,15 @@ import { openDefaultBrower, isUndefined, isString, isFunction } from './utils.js
 var proxy = httpProxy.createProxyServer();
 var spawn = child_process.spawn;
 
+
 process.on('uncaughtException', function (err) {
   console.error(err);
 });
 
+
+const localFile = (path) => {
+
+}
 function Run(config) {
   const decode = [];
 
@@ -30,6 +36,11 @@ function Run(config) {
 
   if (!isUndefined(config.publicPath) && isString(config.publicPath)) {
     /** publicPath who? */
+    // localTransfrom: {
+    //   "/a/b/c" () {
+
+    //   }
+    // }
     // decode.push({
     //   url: config.publicPath,
     //   format(req, res, body) {
@@ -72,6 +83,11 @@ function Run(config) {
       let proxyKeys = Object.keys(config.proxy);
       let currKey = proxyKeys.find(i => req.url.indexOf(i) > -1)
       if (currKey && config.proxy[currKey]) {
+        const bypassUrl = config.proxy[currKey].bypass && config.proxy[currKey].bypass(req, res);
+        /** in case match bypassUrl, returns local file */
+        if(typeof bypassUrl === 'string') {
+          req.url = bypassUrl;
+        }
         proxy.web(req, res, {
           target: config.proxy[currKey].target,
           selfHandleResponse: !!decode.find((i) => req.url.indexOf(i.url) > -1),
@@ -88,6 +104,18 @@ function Run(config) {
     });
 }
 
+const app = () => {
+  const tasks = Array();
+
+  function handle(req,res,next) {
+    var done = next
+  };
+
+  return handle
+}
+
+const _app = app()
+_app
 Run.defineConfig = defineConfig;
 export default Run;
 

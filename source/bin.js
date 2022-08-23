@@ -73,14 +73,14 @@ if (argv._[0] && argv._[0].indexOf('.config') > -1) {
    */
   if (isPlainObject(jobConfig) && !isFunction(jobConfig)) {
 
-    full_config = defineConfig(Object.assign(jobConfig, argv));
+    full_config = defineConfig(jobConfig, argv);
   } else {
     console.error('Only support "Object"');
   }
 } else {
   try {
     const jobRoot_default_Config = require(_resolve(cwd, CONST_FILE_NAME))
-    full_config = defineConfig(Object.assign(jobRoot_default_Config, argv))
+    full_config = defineConfig(jobRoot_default_Config, argv)
   } catch {
     full_config = defineConfig(argv);
   }
