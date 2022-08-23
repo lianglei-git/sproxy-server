@@ -109,10 +109,12 @@ function Run(config) {
 
 
 Run.defineConfig = defineConfig;
+Run.app = app;
 export default Run;
 
 export {
-  defineConfig
+  defineConfig,
+  app
 }
 /** using */
 // 1. Using the CLI:  proxy-server || proxy-server abc.config.js

@@ -1,9 +1,15 @@
-import defaultConfig from "../source/defaut_configs";
-
+import defaultConfig from "./defaut_configs";
+import type { Server } from 'http';
 
 type Config = defaultConfig
 
-declare const proServer:(config: Config) => void;
+type Default = {
+    (config: Config): void;
+    defineConfig: (config: Config) => Config
+    app: Server
+}
+declare const proServer: Default;
 export default proServer;
 
-export declare const defineConfig: (config: Config) => Config
+export declare const defineConfig: Default['defineConfig']
+export declare const app: Default['app']

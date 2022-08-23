@@ -1,4 +1,5 @@
 
+
 type Decode = {
     url: String
     format(res, req, data): void
@@ -8,7 +9,8 @@ type Proxy = {
     [k: string]: {
         /** decodeFunction or intercept for only match one */
         intercept?: (res, req, data) => unknown
-        target: String
+        target: String,
+        bypass?:(res,req) => Request.prototype.url | string
     }
 }
 

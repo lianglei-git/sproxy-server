@@ -1,6 +1,6 @@
-import defaultConfig from "./defaut_configs.js";
-import merge from './merge.js'
-import path from 'path'
+import defaultConfig from "../types/defaut_configs.js";
+import merge from './merge.js';
+import path from 'path';
 
 /**
  * @returns {defaultConfig}
@@ -16,6 +16,5 @@ export default function (...args) {
     }
     const d = _default[0];
     d.basicConnect = path.resolve(process.cwd(), d.contentBase || '');
-    // defaultConfig.decodeFunction()
     return d;
 }
