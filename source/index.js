@@ -74,7 +74,7 @@ function Run(config) {
   app.use((req, res, next) => {
     /** bypass, If a local file is matched, the local file is used; in case match bypassUrl, returns local file */
     const proxyTarget = res.proxyTarget;
-    const bypassUrl = proxyTarget.bypass && proxyTarget.bypass(req, res) || '';
+    let bypassUrl = proxyTarget.bypass && proxyTarget.bypass(req, res) || '';
     if (bypassUrl.indexOf('?') > -1) {
       bypassUrl = bypassUrl.slice(0, bypassUrl.indexOf('?'));
     }
