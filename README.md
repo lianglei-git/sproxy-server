@@ -1,16 +1,21 @@
-### production proxy server
+## Production Proxy Server or Match Local File
 
+>Do: If you want to be a proxy server, you need to use local files according to different rules. Then you can use this tool；
 
 ## Using 
 - `pnpm add sproxy-server`
   
-- `Using Cli`
-    `sproxy-server xxx.config.js`
+  - `Using Cli`
+    `sproxy-server xxx.config.js` Or `proserver.config.js` for the project root, Run again `sproxy-server`
 
-- `Using Code`
+  - `Using Code`
     ```js 
         import proServer from 'sproxy-server';
         proServer(config);
+        // in case you want to use middleware: 
+        proServer.app.use((req,res,next) => {});
+        // in case you want rewrite `defineConfig`
+        proServer.defineConfig(Object);
     ```
 
 
@@ -24,6 +29,7 @@
 > For details about parameter Settings, see [Details](types/index.d.ts)
 
 
+### 🌰
 ```js
 module.exports = {
     port?: 24678,
