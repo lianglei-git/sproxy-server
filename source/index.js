@@ -1,17 +1,13 @@
-// TODO
-import child_process from 'child_process';
-import fs, { accessSync, existsSync, readFileSync } from 'fs';
+/** entry  */ 
+import { existsSync, readFileSync } from 'fs';
 import createApplication, { useCores } from './kiss.js';
-import http from 'http';
 import httpProxy from 'http-proxy';
-import mime from 'mime';
 import path from 'path';
 import { isPromise } from 'util/types';
 import defineConfig from './define.config.js'
 import { openDefaultBrower, isUndefined, isString, isFunction } from './utils.js';
 const app = createApplication();
 var proxy = httpProxy.createProxyServer();
-var spawn = child_process.spawn;
 
 app.use(useCores());
 process.on('uncaughtException', function (err) {
@@ -119,7 +115,7 @@ export {
 /** using */
 // 1. Using the CLI:  proxy-server || proxy-server abc.config.js
 // 2. Using the Code: 
-//                1|  import Server from 'pro-proxy-server'
+//                1|  import Server from 'sproxy-server'
 //                2|  Server(config);
 //                3|  wait... is not the end
 //                4|  in case want to see the detailed configuration， i don't konw 🤕️

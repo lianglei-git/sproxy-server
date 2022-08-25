@@ -18,6 +18,8 @@ const _resolve = path.resolve;
 const CONST_FILE_NAME = 'proserver.config.js';
 
 
+
+
 if (argv.h || argv.help) {
   console.log([
     'usage: xy-pro-server [config path]',
@@ -63,19 +65,8 @@ if (argv.h || argv.help) {
   ].join('\n'));
   process.exit();
 }
-const RequireConfigFile = async (relativePath) => {
-  let jobConfig = await import(_resolve(cwd, relativePath));
-  /** handling Default behavior */
-  if (isPlainObject(jobConfig.default)) {
-    jobConfig = jobConfig.default;
-  } else if (isFunction(jobConfig.default)) {
-    jobConfig = jobConfig.default();
-  }
-  return jobConfig;
-}
-
 if (argv._[0] && argv._[0].indexOf('.config') > -1) {
-  let jobConfig = await RequireConfigFile(argv._[0]);
+  let jobConfig = require(argv._[0]);
   /** 
    * Only plain object of the target file are processed
    */
@@ -87,7 +78,7 @@ if (argv._[0] && argv._[0].indexOf('.config') > -1) {
   }
 } else {
   try {
-    let jobRoot_default_Config = await RequireConfigFile(CONST_FILE_NAME);
+    const jobRoot_default_Config = require(CONST_FILE_NAME)
     full_config = defineConfig(jobRoot_default_Config, argv)
   } catch {
     full_config = defineConfig(argv);

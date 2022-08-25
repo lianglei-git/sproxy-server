@@ -1,4 +1,4 @@
-
+import type { ClientRequestArgs } from 'node:http'
 
 type Decode = {
     url: String
@@ -10,7 +10,7 @@ type Proxy = {
         /** decodeFunction or intercept for only match one */
         intercept?: (res, req, data) => unknown
         target: String,
-        bypass?:(res,req) => Request.prototype.url | string
+        bypass?: (res, req) => string | URL | ClientRequestArgs
     }
 }
 

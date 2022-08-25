@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from 'fs';
 import { dirname, extname, resolve } from 'path';
+import URL from 'url';
 import vm from 'vm';
-
+const cwd = process.cwd();
+const _resolve = (...args) => resolve(cwd, ...args);
 class Module {
     id = null;
     exports = {};
@@ -18,7 +20,8 @@ class Module {
         'ts'() { }
     }
     static _resolvePathName(_filenmae) {
-        var filenmae = resolve(_filenmae);
+        
+        var filenmae = _resolve(_filenmae);
         let id = null;
         if (existsSync(filenmae)) {
             id = filenmae
@@ -43,6 +46,7 @@ class Module {
 
 const _Require = (path) => {
     let resolvePath = Module._resolvePathName(path);
+    console.log(path, resolvePath,'resolvePathresolvePathresolvePath')
     let catchData = Reflect.get(Module.catch, resolvePath) || null;
     let res = null;
     try {

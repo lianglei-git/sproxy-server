@@ -1,4 +1,4 @@
-import defaultConfig from "../types/defaut_configs.js";
+import defaultConfig from "./defaut_configs.js";
 import merge from './merge.js';
 import path from 'path';
 

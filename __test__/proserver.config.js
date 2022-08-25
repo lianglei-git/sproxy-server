@@ -1,13 +1,12 @@
-// require('./aa.js')
-
-module.exports = {
+import { defineConfig } from '../source/index.js';
+export default defineConfig({
   ksl: 1123,
   contentBase: '.',
   port: 24678,
   host: '0.0.0.0',
-  open: true, // 是否自动打开默认浏览器
+  open: true, // open browser
   publicPath: '/static/viewct/',
-  /** 转译读取本地资源 */
+  /** match local file */
   // decodeFunction(config) {
   //   return [
   //     {
@@ -42,7 +41,6 @@ module.exports = {
       },
       // 👌
       bypass: function name(req, res) {
-        // 静态资源读取本地
         if (req.url.substr(0, 15) == '/static/viewct/') {
           return req.url.substr(14);
         }
@@ -51,4 +49,4 @@ module.exports = {
     }
   }
 }
-
+)
