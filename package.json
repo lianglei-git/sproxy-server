@@ -1,6 +1,6 @@
 {
   "name": "sproxy-server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "production proxy server (http-server),  after packaged agent",
   "main": "source/index.js",
   "type": "module",
