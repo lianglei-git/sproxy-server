@@ -19,7 +19,7 @@
   },
   "preferGlobal": true,
   "scripts": {
-    "server": "node ./source/bin.js ./__test__/proserver.config.js",
+    "server": "node ./source/bin.js ./__test__/proserver.config.mjs",
     "test": "vitest"
   },
   "keywords": [
@@ -29,7 +29,7 @@
   ],
   "license": "MIT",
   "bin": {
-    "proxy-server": "./bin/index.mjs"
+    "sproxy-server": "./bin/index.mjs"
   },
   "bugs": {
     "url": "https://github.com/lianglei-git/pro-proxy-server/issues",

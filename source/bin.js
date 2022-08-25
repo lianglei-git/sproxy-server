@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filenameNew)
 process.title = 'xy-pro-server';
 let full_config;
 const _resolve = path.resolve;
-const CONST_FILE_NAME = 'proserver.config.js';
+const CONST_FILE_NAME = 'proserver.config.mjs';
 
 
 if (argv.h || argv.help) {
