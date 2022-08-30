@@ -96,7 +96,7 @@ function Run(config) {
 
   app.listen(config.port, config.host, () => {
     const IP = 'http://' + config.host + ':' + config.port;
-    console.log('URL -> ', IP);
+    console.log('✨ URL -> \x1B[36m', IP, '\x1B[30m');
     if (config.open) {
       openDefaultBrower(IP)
     }

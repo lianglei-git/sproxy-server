@@ -1,6 +1,6 @@
 {
   "name": "sproxy-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "production proxy server (http-server),  after packaged agent",
   "main": "source/index.js",
   "type": "module",
@@ -42,8 +42,9 @@
     "node": ">=8.0.0",
     "npm": "~6.1.0"
   },
-  "dependencies": {
+  "devDependencies": {
     "http-proxy": "^1.18.1",
-    "mime": "^3.0.0"
+    "mime": "^3.0.0",
+    "minimist": "^1.2.6"
   }
 }

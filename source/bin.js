@@ -1,63 +1,45 @@
 import process from 'process';
-import fs from 'node:fs';
 import path from 'path';
 import minimist from 'minimist'
 import defineConfig from './define.config.js';
-import { isFunction, isUndefined, isPlainObject } from './utils.js';
+import { isFunction, isPlainObject } from './utils.js';
 import { fileURLToPath } from 'url'
-import require from './_require.js'
 import Entry from './index.js';
-const cwd = process.cwd();
-const argv = minimist(process.argv.slice(2));
-const __filenameNew = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filenameNew)
+import { readFileSync } from 'fs';
+import mergeConfig from './merge.js';
 
 process.title = 'xy-pro-server';
 let full_config;
-const _resolve = path.resolve;
-const CONST_FILE_NAME = 'proserver.config.mjs';
+const CONST_FILE_NAME = 'proserver.config.mjs',
+  _resolve = path.resolve,
+  cwd = process.cwd(),
+  argv = minimist(process.argv.slice(2)),
+  __filenameNew = fileURLToPath(import.meta.url),
+  __dirname = path.dirname(__filenameNew);
 
 
+/**
+ * File name specification
+ * 1. "proserver.config.mjs" a fixed file name in the root directory.
+ * 2. The name extension must be ".config.mjs" or type Module for package.json
+ */
+
+if (argv.v || argv.version) {
+  const info = readFileSync(_resolve(__dirname, '../package.json')).toString();
+  const _info = JSON.parse(info);
+  console.log('name    :', `\x1B[31m sproxy-server \x1B[31m\x1B[30m`);
+  console.log("version : ", "\x1B[36mv" + _info.version + "\x1B[36m")
+  process.exit();
+}
 if (argv.h || argv.help) {
   console.log([
-    'usage: xy-pro-server [config path]',
+    'usage: sproxy-server [config path], In case  have “config path” File name extension must be "\x1B[35m.config.mjs\x1B[30m"',
     '',
     'options:',
-    '  -p --port    Port to use. If 0, look for open port. [8080]',
-    '  -a           Address to use [0.0.0.0]',
-    '  -d           Show directory listings [true]',
-    '  -i           Display autoIndex [true]',
-    '  -g --gzip    Serve gzip files when possible [false]',
-    '  -b --brotli  Serve brotli files when possible [false]',
-    '               If both brotli and gzip are enabled, brotli takes precedence',
-    '  -e --ext     Default file extension if none supplied [none]',
-    '  -s --silent  Suppress log messages from output',
-    '  --cors[=headers]   Enable CORS via the "Access-Control-Allow-Origin" header',
-    '                     Optionally provide CORS headers list separated by commas',
-    '  -o [path]    Open browser window after starting the server.',
-    '               Optionally provide a URL path to open the browser window to.',
-    '  -c           Cache time (max-age) in seconds [3600], e.g. -c10 for 10 seconds.',
-    '               To disable caching, use -c-1.',
-    '  -t           Connections timeout in seconds [120], e.g. -t60 for 1 minute.',
-    '               To disable timeout, use -t0',
-    '  -U --utc     Use UTC time from at in log messages.',
-    '  --log-ip     Enable logging of the client\'s IP address',
-    '',
-    '  -P --proxy       Fallback proxy if the request cannot be resolved. e.g.: http://someurl.com',
-    '  --proxy-options  Pass options to proxy using nested dotted objects. e.g.: --proxy-options.secure false',
-    '',
-    '  --username   Username for basic authentication [none]',
-    '               Can also be specified with the env variable NODE_HTTP_SERVER_USERNAME',
-    '  --password   Password for basic authentication [none]',
-    '               Can also be specified with the env variable NODE_HTTP_SERVER_PASSWORD',
-    '',
-    '  -S --tls --ssl   Enable secure request serving with TLS/SSL (HTTPS)',
-    '  -C --cert    Path to TLS cert file (default: cert.pem)',
-    '  -K --key     Path to TLS key file (default: key.pem)',
-    '',
-    '  -r --robots        Respond to /robots.txt [User-agent: *\\nDisallow: /]',
-    '  --no-dotfiles      Do not show dotfiles',
-    '  --mimetypes        Path to a .types file for custom mimetype definition',
+    '  -p --port          Port to use. If 0, look for open port. \x1B[34m[24678]\x1B[30m',
+    '  -a --address       Address to use \x1B[34m[0.0.0.0]\x1B[30m',
+    '  -o                 Open browser window after starting the server.',
+    '  -c --contentBase   The address of the local resource \x1B[34m[string]\x1B[30m',
     '  -h --help          Print this list and exit.',
     '  -v --version       Print the version and exit.'
   ].join('\n'));
@@ -65,7 +47,7 @@ if (argv.h || argv.help) {
 }
 const RequireConfigFile = async (relativePath) => {
   let jobConfig = await import(_resolve(cwd, relativePath));
-  /** handling Default behavior */
+  /** Handling Default behavior */
   if (isPlainObject(jobConfig.default)) {
     jobConfig = jobConfig.default;
   } else if (isFunction(jobConfig.default)) {
@@ -74,7 +56,7 @@ const RequireConfigFile = async (relativePath) => {
   return jobConfig;
 }
 
-if (argv._[0] && argv._[0].indexOf('.config') > -1) {
+if (argv._[0] && (argv._[0] + '').indexOf('.config') > -1) {
   let jobConfig = await RequireConfigFile(argv._[0]);
   /** 
    * Only plain object of the target file are processed
@@ -83,15 +65,29 @@ if (argv._[0] && argv._[0].indexOf('.config') > -1) {
 
     full_config = defineConfig(jobConfig, argv);
   } else {
-    console.error('Only support "Object"');
+    console.error('\x1B[31mOnly support "Object"\x1B[30m');
   }
 } else {
   try {
     let jobRoot_default_Config = await RequireConfigFile(CONST_FILE_NAME);
     full_config = defineConfig(jobRoot_default_Config, argv)
-  } catch {
+  } catch (err) {
+    console.info(`\x1B[33m${err.stack}\x1B[33m`)
     full_config = defineConfig(argv);
   }
 }
+
+/**
+ * @param {string[] | number[]} arg Must be of type (String | Number)
+ */
+function transform(arg) {
+  return {
+    [(argv.p || argv.port) && 'port']: arg.p || arg.port,
+    [(argv.a || argv.address) && 'host']: arg.a || arg.address,
+    [(argv.o) && 'open']: arg.o === 'false' ? false : true,
+    [(argv.c || argv.contentBase) && 'contentBase']: argv.c || argv.contentBase,
+  }
+}
+full_config = mergeConfig(full_config, transform(argv));
 
 full_config && Entry(full_config);
