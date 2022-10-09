@@ -129,7 +129,8 @@ const useCores = (options) => {
              set('Access-Control-Allow-Headers', options.allowHeaders);
         }
         // res.setHeader("Access-Control-Allow-Headers", "content-type");
-        const type = mime.getType(req.url);
+        const getType = mime.getType || mime.lookup;
+        const type = getType(req.url);
         res.setHeader('Content-Type', type);
         next();
     }
