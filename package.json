@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "http-proxy": "^1.18.1",
-    "mime": "^3.0.0",
+    "mime": "^2.6.0",
     "minimist": "^1.2.6"
   }
 }
