@@ -1,5 +1,5 @@
 {
-  "name": "sproxy-server",
+  "name": "@sparrowend/proxy-server",
   "version": "1.0.8",
   "description": "production proxy server (http-server),  after packaged agent",
   "main": "source/index.js",
